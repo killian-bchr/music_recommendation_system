@@ -12,8 +12,3 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Jupyter / notebooks
-notebooks/
-*.ipynb_checkpoints/
-*.ipynb
