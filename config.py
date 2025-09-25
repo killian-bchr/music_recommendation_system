@@ -1,0 +1,9 @@
+import os
+
+
+class Config:
+    API_KEY_LAST_FM = os.getenv("API_KEY_LASTFM")
+    CLIENT_SECRET_LAST_FM = os.getenv("CLIENT_SECRET_LASTFM")
+    CLIENT_ID_SPOTIFY = os.getenv("CLIENT_ID_SPOTIFY")
+    CLIENT_SECRET_SPOTIFY = os.getenv("CLIENT_SECRET_SPOTIFY")
+    REDIRECT_URI_SPOTIFY = os.getenv("REDIRECT_URI_SPOTIFY")

@@ -1,4 +1,4 @@
-from utils import Utils
+from utils.utils import Utils
 import sqlite3
 import pandas as pd
 

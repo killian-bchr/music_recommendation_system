@@ -1,4 +1,3 @@
-import spotipy
 import requests
 import pandas as pd
 import numpy as np
@@ -13,50 +12,12 @@ from collections import Counter
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
-from spotipy.oauth2 import SpotifyOAuth
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 from sklearn.cluster import KMeans
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
-
-from config.config import (
-    api_key_lastfm,
-    client_id,
-    client_secret,
-    redirect_uri
-)
-
-
-class Client:
-
-    def __init__(
-            self,
-            client_id = client_id,
-            client_secret = client_secret,
-            redirect_uri = redirect_uri,
-            api_key = api_key_lastfm
-        ):
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.redirect_uri = redirect_uri
-        self.scope = "user-top-read user-read-private user-library-read playlist-read-private user-read-playback-state user-read-recently-played"
-        self.api_key = api_key
-
-    def get_spotify_client(self):
-        ### Spotify Authentication
-        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            client_id = self.client_id,
-            client_secret = self.client_secret,
-            redirect_uri = self.redirect_uri,
-            scope = self.scope
-        ))
-        return sp
-    
-    def get_api_key(self):
-        ### Return api_key_lastfm
-        return self.api_key
 
 
 class Tracklist:

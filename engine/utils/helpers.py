@@ -9,71 +9,34 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from sklearn.impute import SimpleImputer
-from requests.exceptions import JSONDecodeError
 
-from functions import Client
-
-client = Client()
-sp = client.get_spotify_client()
-api_key = client.get_api_key()
+from authentication import spotify_client as sp
+from engine.utils.lastfmclient import LastFMClient
 
 
-class Utils:
+class Helpers:
 
     @staticmethod
-    def get_artist_details(artist, method):
-        """
-        artist : artis name (string)
-        api_key : last_fm api key (string)
-        method : thing we want to request (string) (ex : artist.getSimilar)
+    def get_artist_details(artist: str, method: str) -> dict:
+        params = {
+            'method': method,
+            'artist': artist,
+        }
+        return LastFMClient.make_lastfm_request(params)
 
-        Make and return the get request
-        """
-        url = 'http://ws.audioscrobbler.com/2.0/?'
-
-        endpoint = f'method={method}&artist={artist}&api_key={api_key}&format=json'
-
-        response = requests.get(url+endpoint)
-
-        if response.status_code == 200:
-            try:
-                data = response.json()
-            except JSONDecodeError:
-                #print("Erreur de décodage JSON, réponse API:", response.text)
-                return {}
-            return data
-        else:
-            print('error :', response.status_code, response.text)
 
     @staticmethod
-    def get_track_details(track, artist, method):
-        """
-        track : track name (string)
-        artist : artist name (string)
-        api_key : last_fm api_key (string)
-        method : thing we want to request (string) (ex : track.getInfo)
-
-        Make and return the get request
-        """
-        url = 'http://ws.audioscrobbler.com/2.0/?'
-
-        endpoint = f'method={method}&api_key={api_key}&artist={artist}&track={track}&format=json'
-
-        response = requests.get(url+endpoint)
-
-        if response.status_code == 200:
-            try:
-                data = response.json()
-            except JSONDecodeError:
-                #print("Erreur de décodage JSON, réponse API:", response.text)
-                return {}
-            return data
-        else:
-            print('error :', response.status_code, response.text)
+    def get_track_details(track: str, artist: str, method: str) -> dict:
+        params = {
+            'method': method,
+            'artist': artist,
+            'track': track,
+        }
+        return LastFMClient.make_lastfm_request(params)
 
     ### Spotify functions
     @staticmethod
-    def search_track(track_name, artist_name=None):
+    def search_track(track_name: str, artist_name: str = None):
         """
         track_name : track name (string)
         artist_name : atist name (string)
