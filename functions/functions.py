@@ -9,7 +9,6 @@ from requests.exceptions import JSONDecodeError
 from kneed import KneeLocator
 from scipy import stats
 from datetime import datetime
-from wordcloud import WordCloud
 from collections import Counter
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import LabelEncoder
