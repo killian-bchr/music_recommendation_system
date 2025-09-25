@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import modules.spotify as spotify
+import functions.functions as spotify
 
 app = Flask(__name__)
 
