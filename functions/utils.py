@@ -17,8 +17,9 @@ client = Client()
 sp = client.get_spotify_client()
 api_key = client.get_api_key()
 
+
 class Utils:
-    ### Get track features
+
     @staticmethod
     def get_artist_details(artist, method):
         """
@@ -264,6 +265,16 @@ class Utils:
         recent_tracks_df['played_at'] = pd.to_datetime(recent_tracks_df['played_at'], errors='coerce')
         return recent_tracks_df
 
+    @staticmethod
+    def remove_outliers(df):
+        for column in df.columns:
+            Q1 = df[column].quantile(0.25)
+            Q3 = df[column].quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+            return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+
     ### Clustering
 
     ### Using K-Means
@@ -282,16 +293,13 @@ class Utils:
         imputer = SimpleImputer(strategy="mean")
         tracklist_imputed = pd.DataFrame(imputer.fit_transform(tracklist), columns=tracklist.columns)
 
-        scaler = MinMaxScaler()
-        X_scaled = scaler.fit_transform(tracklist_imputed)
-
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             inertia = []
             K_range = range(2, 11)
             for k in K_range:
                 kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                kmeans.fit(X_scaled)
+                kmeans.fit(tracklist_imputed)
                 inertia.append(kmeans.inertia_)
 
             knee = KneeLocator(K_range, inertia, curve="convex", direction="decreasing")
@@ -302,7 +310,7 @@ class Utils:
 
             kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
 
-            return kmeans.fit_predict(X_scaled)
+            return kmeans.fit_predict(tracklist_imputed)
 
     @staticmethod
     def visualize_clustering(tracklist, feature=None):
@@ -321,16 +329,13 @@ class Utils:
         imputer = SimpleImputer(strategy="mean")
         tracklist_imputed = pd.DataFrame(imputer.fit_transform(tracklist), columns=tracklist.columns)
 
-        scaler = MinMaxScaler()
-        X_scaled = scaler.fit_transform(tracklist_imputed)
-
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             inertia = []
             K_range = range(2, 11)
             for k in K_range:
                 kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                kmeans.fit(X_scaled)
+                kmeans.fit(tracklist_imputed)
                 inertia.append(kmeans.inertia_)
 
             plt.plot(K_range, inertia, marker='o')
@@ -345,13 +350,15 @@ class Utils:
             if optimal_k is None:
                 optimal_k = 2
 
+            optimal_k = 4  ## juste pour tester avec un nombre de cluster précis
+
             kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
 
             pca = PCA(n_components=2)
-            X_pca = pca.fit_transform(X_scaled)
+            X_pca = pca.fit_transform(tracklist_imputed)
 
             df_pca = pd.DataFrame(X_pca, columns=['PCA1', 'PCA2'])
-            df_pca['Cluster'] = kmeans.fit_predict(X_scaled)
+            df_pca['Cluster'] = kmeans.fit_predict(tracklist_imputed)
 
             if feature is not None:
                 df_pca['Track_ID'] = feature
@@ -461,9 +468,6 @@ class Utils:
             cluster_dfs[i] = cluster if not cluster.empty else pd.DataFrame()
 
         return cluster_dfs
-    
-
-    ### Search tracks
 
     @staticmethod
     def search_similar_tracks_by_pos(tracklist, clusters, cosine_matrices, track_pos, nb_tracks=5):

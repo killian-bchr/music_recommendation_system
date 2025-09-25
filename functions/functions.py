@@ -16,14 +16,12 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 from spotipy.oauth2 import SpotifyOAuth
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 from sklearn.cluster import KMeans
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
-from abc import ABC, abstractmethod
 
 from config.config import (
     api_key_lastfm,
@@ -31,7 +29,6 @@ from config.config import (
     client_secret,
     redirect_uri
 )
-
 
 
 class Client:
@@ -43,8 +40,8 @@ class Client:
             redirect_uri = redirect_uri,
             api_key = api_key_lastfm
         ):
-        self.client_id = client_id,
-        self.client_secret = client_secret,
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.redirect_uri = redirect_uri
         self.scope = "user-top-read user-read-private user-library-read playlist-read-private user-read-playback-state user-read-recently-played"
         self.api_key = api_key
@@ -69,7 +66,10 @@ class Tracklist:
     def __init__(self, df):
         self.df = df
 
-    def vectorize_recent_tracks(self, n_components=1, played_date=False):
+    def view_tracklist(self):
+        return self.df
+
+    def vectorize_recent_tracks(self, n_components=1, played_at=False):
         """
         df : dataframe with last tracks (returned by get_recent_track)
         n_components : number of components used in the PCA method (integer)
@@ -98,7 +98,7 @@ class Tracklist:
         df_vect['release_date'] = pd.to_datetime(df_vect['release_date'], errors='coerce')
         df_vect['release_date'] = (df_vect['release_date'] - reference_date).dt.days
 
-        if played_date:
+        if played_at:
             # Vectorize played date : conserve cyclic relation with cos and sin
 
             df_vect['year'] = df['played_at'].dt.year
@@ -152,10 +152,9 @@ class Tracklist:
 
         return df_vect
 
-
     def scale_and_weight(self, weights=None, n_components=1, played_at = False):
         """
-        df_vect : dataframe with vectorized data (resulting from vectorize_recent_tracks function)
+        df : dataframe with last tracks (returned by get_recent_track)
         weights : a dictionnaire with features to be weights in key (string) and the wieght in value (float)
                             (ex : {'duration': 0.5, 'album_id': 500, 'album_artists_id': 1000, 'track_tags': 20})
                             after being scaled the default weight is 1
@@ -165,7 +164,7 @@ class Tracklist:
         Return a dataframe with weighted and scaled data
         """
         df_vect = self.vectorize_recent_tracks(n_components = n_components, played_at = played_at)
-        scaler = MinMaxScaler()
+        scaler = StandardScaler()
         df_vect_scaled = pd.DataFrame(scaler.fit_transform(df_vect), columns=df_vect.columns, index=df_vect.index)
 
         if weights:
@@ -177,6 +176,8 @@ class Tracklist:
                         col_name = f"{prefix}_{i}" if n_components > 1 else prefix
                         if col_name in df_vect_scaled.columns:
                             df_vect_scaled[col_name] *= weight
+            
+            #df_vect_scaled = pd.DataFrame(scaler.fit_transform(df_vect_scaled), columns=df_vect_scaled.columns, index=df_vect_scaled.index)
 
         return df_vect_scaled
 

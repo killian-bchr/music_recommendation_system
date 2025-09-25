@@ -1,5 +1,4 @@
-import os
-import spotify
+from utils import Utils
 import sqlite3
 import pandas as pd
 
@@ -7,7 +6,7 @@ import pandas as pd
 def main():
     # Get a dataframe with the last tracks
     print("Start to load the last tracks listened")
-    last_tracks_df = spotify.get_recent_tracks(50)
+    last_tracks_df = Utils.get_recent_tracks(50)
     last_tracks_df.sort_values(by='played_at', ascending=False, inplace=True)
     print("Last tracks listened have been imported successfully !")
 
