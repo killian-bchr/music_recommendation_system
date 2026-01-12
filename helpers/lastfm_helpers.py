@@ -1,5 +1,6 @@
 import requests
 import logging
+from typing import Dict
 from requests.exceptions import JSONDecodeError
 
 from config import Config
@@ -12,7 +13,7 @@ class LastFMHelpers:
     BASE_URL = 'http://ws.audioscrobbler.com/2.0/?'
 
     @staticmethod
-    def make_lastfm_request(params: dict) -> dict:
+    def make_lastfm_request(params: Dict) -> Dict:
         """
         Helper method to make a GET request to the Last.fm API.
 
@@ -41,7 +42,7 @@ class LastFMHelpers:
             return {}
 
     @staticmethod
-    def get_artist_details(artist: str, method: str) -> dict:
+    def get_artist_details(artist: str, method: str) -> Dict:
         params = {
             'method': method,
             'artist': artist,
@@ -49,7 +50,7 @@ class LastFMHelpers:
         return LastFMHelpers.make_lastfm_request(params)
 
     @staticmethod
-    def get_track_details(track: str, artist: str, method: str) -> dict:
+    def get_track_details(track: str, artist: str, method: str) -> Dict:
         params = {
             'method': method,
             'artist': artist,

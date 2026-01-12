@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from database.crud import CRUD
 from database.session import get_session
-from preprocessing import DataPreprocessor, DataTransformer
+from preprocessing import DataBuilder, DataPreprocessor, DataTransformer, DataSelector
 from helpers import DBHelpers, SpotifyHelpers
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class Pipeline:
     def load_listenings(self, nb_tracks: int = 10) -> None:
         logger.info("Extracting last listenings from Spotify...")
         items = SpotifyHelpers.extract_tracks(nb_tracks)
-        listenings = DataTransformer.build_listenings(items)
+        listenings = DataBuilder.build_listenings(items)
 
         logger.info("Loading listenings to database...")
         CRUD.listenings_to_orm(self.session, listenings)
@@ -28,7 +28,7 @@ class Pipeline:
 
     def load_playlist(self, playlist_id: str) -> None:
         logger.info("Extracting tracks from a playlist...")
-        playlist = DataTransformer.build_playlist(playlist_id)
+        playlist = DataBuilder.build_playlist(playlist_id)
 
         logger.info("Loading playlist to database...")
         CRUD.playlist_to_orm(self.session, playlist)
@@ -36,9 +36,9 @@ class Pipeline:
 
     def load_new_objects(self) -> None:
         logger.info("Fetching new Artists, Albums and Tracks from listenings...")
-        new_artists = DataTransformer.get_new_artists(self.session)
-        new_albums = DataTransformer.get_new_albums(self.session)
-        new_tracks = DataTransformer.get_new_tracks(self.session)
+        new_artists = DataSelector.select_new_artists(self.session)
+        new_albums = DataSelector.select_new_albums(self.session)
+        new_tracks = DataSelector.select_new_tracks(self.session)
 
         logger.info("Loading new Artists, Albums and Tracks to database...")
         CRUD.artists_to_orm(self.session, new_artists)
@@ -48,8 +48,8 @@ class Pipeline:
 
     def transform_objects_to_df(self) -> tuple[DataFrame, DataFrame]:
         logger.info("Retrieving data from database...")
-        all_tracks = DBHelpers.get_all_tracks(self.session)
-        all_artists = DBHelpers.get_all_artists(self.session)
+        all_tracks = DBHelpers.fetch_all_tracks(self.session)
+        all_artists = DBHelpers.fetch_all_artists(self.session)
 
         logger.info("Transforming data to DataFrame...")
         tracks_df = DataTransformer.build_tracks_df(all_tracks)

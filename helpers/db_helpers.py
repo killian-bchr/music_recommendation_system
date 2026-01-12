@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy import desc
+from sqlalchemy.orm import joinedload, Session
 
 from database.tables import (
     AlbumORM,
@@ -14,23 +15,58 @@ from database.tables import (
 
 class DBHelpers:
     @staticmethod
-    def get_all_listenings(session: Session) -> list[ListeningORM]:
+    def fetch_all_listenings(session: Session) -> List[ListeningORM]:
         return session.query(ListeningORM).all()
 
     @staticmethod
-    def get_all_tracks(session: Session) -> list[TrackORM]:
-        return session.query(TrackORM).all()
+    def fetch_last_listenings(
+        session: Session, 
+        n_listenings: int
+    ) -> List[ListeningORM]:
+        return (
+            session.query(ListeningORM)
+            .order_by(desc(ListeningORM.played_at))
+            .limit(n_listenings)
+            .all()
+        )
+
+    def get_tracks_by_spotify_ids(
+        session: Session, 
+        track_ids: List[str]
+    ) -> List[TrackORM]:
+        return (
+            session.query(TrackORM)
+            .filter(TrackORM.spotify_id.in_(track_ids))
+            .all()
+        )
 
     @staticmethod
-    def get_all_albums(session: Session) -> list[AlbumORM]:
+    def fetch_last_tracks_listened(
+        session: Session, 
+        n_listenings: int
+    ) -> List[TrackORM]:
+        last_listenings = DBHelpers.fetch_last_listenings(session, n_listenings)
+        track_ids = [l.track_id for l in last_listenings]
+        return DBHelpers.get_tracks_by_spotify_ids(session, track_ids)
+
+    @staticmethod
+    def fetch_all_tracks(session: Session) -> List[TrackORM]:
+        return (
+            session.query(TrackORM)
+            .options(joinedload(TrackORM.artists))
+            .all()
+        )
+
+    @staticmethod
+    def fetch_all_albums(session: Session) -> List[AlbumORM]:
         return session.query(AlbumORM).all()
 
     @staticmethod
-    def get_all_artists(session: Session) -> list[ArtistORM]:
+    def fetch_all_artists(session: Session) -> List[ArtistORM]:
         return session.query(ArtistORM).all()
 
     @staticmethod
-    def get_all_playlists(session: Session) -> list[PlaylistORM]:
+    def fetch_all_playlists(session: Session) -> List[PlaylistORM]:
         return session.query(PlaylistORM).all()
 
     @staticmethod
@@ -58,5 +94,5 @@ class DBHelpers:
         return session.query(PlaylistORM).filter_by(spotify_id=spotify_id).first()
 
     @staticmethod
-    def get_track_by_id(session: Session, track_id: int) -> TrackORM:
+    def get_track_by_id(session: Session, track_id: int) -> Optional[TrackORM]:
         return session.query(TrackORM).filter_by(id=track_id).first()
