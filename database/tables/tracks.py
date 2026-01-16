@@ -1,8 +1,11 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from database.base import Base
-from database.tables.association_tables import track_artist_association, playlist_track_association
+from database.tables.association_tables import (
+    playlist_track_association,
+    track_artist_association,
+)
 
 
 class TrackORM(Base):
@@ -20,10 +23,10 @@ class TrackORM(Base):
     album_id = Column(Integer, ForeignKey("albums.id"))
     album = relationship("AlbumORM", back_populates="tracks")
 
-    artists = relationship("ArtistORM", secondary=track_artist_association, backref="tracks")
+    artists = relationship(
+        "ArtistORM", secondary=track_artist_association, backref="tracks"
+    )
 
     playlists = relationship(
-        "PlaylistORM",
-        secondary=playlist_track_association,
-        back_populates="tracks"
+        "PlaylistORM", secondary=playlist_track_association, back_populates="tracks"
     )

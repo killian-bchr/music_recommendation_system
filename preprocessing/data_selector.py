@@ -1,8 +1,9 @@
-from sqlalchemy.orm import Session
 from typing import List
 
-from models import Album, Artist, Track
+from sqlalchemy.orm import Session
+
 from helpers import DBHelpers
+from models import Album, Artist, Track
 from preprocessing.data_builder import DataBuilder
 
 

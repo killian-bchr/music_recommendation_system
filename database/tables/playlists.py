@@ -12,7 +12,5 @@ class PlaylistORM(Base):
     spotify_id = Column(String, unique=True)
 
     tracks = relationship(
-        "TrackORM",
-        secondary=playlist_track_association,
-        back_populates="playlists"
+        "TrackORM", secondary=playlist_track_association, back_populates="playlists"
     )

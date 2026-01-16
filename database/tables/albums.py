@@ -16,7 +16,5 @@ class AlbumORM(Base):
     tracks = relationship("TrackORM", back_populates="album")
 
     artists = relationship(
-        "ArtistORM",
-        secondary=artist_album_association,
-        back_populates="albums"
+        "ArtistORM", secondary=artist_album_association, back_populates="albums"
     )

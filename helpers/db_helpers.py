@@ -1,15 +1,16 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from sqlalchemy import desc
-from sqlalchemy.orm import joinedload, Session
+from sqlalchemy.orm import Session, joinedload
 
 from database.tables import (
     AlbumORM,
     ArtistORM,
-    TrackORM,
     ListeningORM,
     PlaylistORM,
     TagORM,
+    TrackORM,
 )
 
 
@@ -20,8 +21,7 @@ class DBHelpers:
 
     @staticmethod
     def fetch_last_listenings(
-        session: Session, 
-        n_listenings: int
+        session: Session, n_listenings: int
     ) -> List[ListeningORM]:
         return (
             session.query(ListeningORM)
@@ -31,22 +31,16 @@ class DBHelpers:
         )
 
     def get_tracks_by_spotify_ids(
-        session: Session, 
-        track_ids: List[str]
+        session: Session, track_ids: List[str]
     ) -> List[TrackORM]:
-        return (
-            session.query(TrackORM)
-            .filter(TrackORM.spotify_id.in_(track_ids))
-            .all()
-        )
+        return session.query(TrackORM).filter(TrackORM.spotify_id.in_(track_ids)).all()
 
     @staticmethod
     def fetch_last_tracks_listened(
-        session: Session, 
-        n_listenings: int
+        session: Session, n_listenings: int
     ) -> List[TrackORM]:
         last_listenings = DBHelpers.fetch_last_listenings(session, n_listenings)
-        track_ids = [l.track_id for l in last_listenings]
+        track_ids = [listening.track_id for listening in last_listenings]
         return DBHelpers.get_tracks_by_spotify_ids(session, track_ids)
 
     @staticmethod
@@ -90,14 +84,12 @@ class DBHelpers:
 
     @staticmethod
     def fetch_all_tags(session: Session) -> List[TagORM]:
-        return (
-            session.query(TagORM)
-            .options(joinedload(TagORM.artists))
-            .all()
-        )
+        return session.query(TagORM).options(joinedload(TagORM.artists)).all()
 
     @staticmethod
-    def get_existing_listening(session: Session, played_at: datetime) -> Optional[ListeningORM]:
+    def get_existing_listening(
+        session: Session, played_at: datetime
+    ) -> Optional[ListeningORM]:
         return session.query(ListeningORM).filter_by(played_at=played_at).first()
 
     @staticmethod
@@ -117,7 +109,9 @@ class DBHelpers:
         return session.query(TrackORM).filter_by(spotify_id=spotify_id).first()
 
     @staticmethod
-    def get_existing_playlist(session: Session, spotify_id: str) -> Optional[PlaylistORM]:
+    def get_existing_playlist(
+        session: Session, spotify_id: str
+    ) -> Optional[PlaylistORM]:
         return session.query(PlaylistORM).filter_by(spotify_id=spotify_id).first()
 
     @staticmethod

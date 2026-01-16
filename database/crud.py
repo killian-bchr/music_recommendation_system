@@ -1,26 +1,26 @@
 from typing import Any
+
 from sqlalchemy.orm import Session
 
 from database.tables import (
     AlbumORM,
     ArtistORM,
-    TrackORM,
-    TagORM,
     ListeningORM,
     PlaylistORM,
+    TagORM,
+    TrackORM,
 )
-from models import Album, Artist, Track, Tag, Listening, Playlist
 from helpers import DBHelpers
+from models import Album, Artist, Listening, Playlist, Tag, Track
 
 
 class CRUD:
-
     @staticmethod
     def save_object_to_session(session: Session, object: Any):
         session.add(object)
         session.flush()
 
-    ### TODO: Add a method with 'session.bulk_save_objects' !
+    # TODO: Add a method with 'session.bulk_save_objects' !
 
     @staticmethod
     def listening_to_orm(session: Session, listening: Listening) -> ListeningORM:
@@ -46,15 +46,17 @@ class CRUD:
         return listenings_orm
 
     @staticmethod
-    def listenings_to_orm(session: Session, listenings: list[Listening]) -> list[ListeningORM]:
-        return [CRUD.listening_to_orm(session, l) for l in listenings]
+    def listenings_to_orm(
+        session: Session, listenings: list[Listening]
+    ) -> list[ListeningORM]:
+        return [CRUD.listening_to_orm(session, listening) for listening in listenings]
 
     @staticmethod
     def tag_to_orm(session: Session, tag: Tag) -> TagORM:
         tag_db = DBHelpers.get_existing_tag(session, tag.name)
         if tag_db:
             return tag_db
-        
+
         tag_orm = TagORM(name=tag.name)
         CRUD.save_object_to_session(session, tag_orm)
         return tag_orm
@@ -74,7 +76,7 @@ class CRUD:
             spotify_id=album.id,
             name=album.name,
             release_date=album.release_date,
-            artists=[CRUD.artist_to_orm(session, a) for a in album.artists]
+            artists=[CRUD.artist_to_orm(session, a) for a in album.artists],
         )
         CRUD.save_object_to_session(session, album_orm)
         return album_orm
@@ -108,10 +110,7 @@ class CRUD:
 
             return artist_db
 
-        artist_orm = ArtistORM(
-            spotify_id=artist.id,
-            name=artist.name
-        )
+        artist_orm = ArtistORM(spotify_id=artist.id, name=artist.name)
 
         CRUD.save_object_to_session(session, artist_orm)
 
@@ -120,7 +119,12 @@ class CRUD:
 
         if artist_orm.similar_artists:
             artist_orm.similar_artists = [
-                sa for sa in (CRUD.artist_to_orm(session, sa, visited) for sa in artist.similar_artists) if sa
+                sa
+                for sa in (
+                    CRUD.artist_to_orm(session, sa, visited)
+                    for sa in artist.similar_artists
+                )
+                if sa
             ]
 
         return artist_orm
@@ -133,8 +137,12 @@ class CRUD:
     def track_to_orm(session: Session, track: Track) -> TrackORM:
         track_db = DBHelpers.get_existing_track(session, track.id)
         if track_db:
-            track_db.listeners = track.listeners if track.listeners is not None else track_db.listeners
-            track_db.playcount = track.playcount if track.playcount is not None else track_db.playcount
+            track_db.listeners = (
+                track.listeners if track.listeners is not None else track_db.listeners
+            )
+            track_db.playcount = (
+                track.playcount if track.playcount is not None else track_db.playcount
+            )
             if track.artists:
                 for artist in track.artists:
                     CRUD.artist_to_orm(session, artist)
@@ -149,7 +157,7 @@ class CRUD:
             listeners=track.listeners,
             playcount=track.playcount,
             album=CRUD.album_to_orm(session, track.album),
-            artists=[CRUD.artist_to_orm(session, a) for a in track.artists]
+            artists=[CRUD.artist_to_orm(session, a) for a in track.artists],
         )
 
         CRUD.save_object_to_session(session, track_orm)
@@ -164,10 +172,9 @@ class CRUD:
         playlist_db = DBHelpers.get_existing_playlist(session, playlist.id)
         if playlist_db:
             return playlist_db
-    
+
         playlist_orm = PlaylistORM(
-            spotify_id=playlist.id,
-            tracks=CRUD.tracks_to_orm(session, playlist.tracks)
+            spotify_id=playlist.id, tracks=CRUD.tracks_to_orm(session, playlist.tracks)
         )
 
         CRUD.save_object_to_session(session, playlist_orm)

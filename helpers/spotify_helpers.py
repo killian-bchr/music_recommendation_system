@@ -9,26 +9,25 @@ logger = logging.getLogger(__name__)
 
 
 class SpotifyHelpers:
-
     @staticmethod
     def retrieve_track_searched(results: Dict) -> Dict:
         if not results["tracks"]["items"]:
-            logger.warning(f"No results found")
+            logger.warning("No results found")
             return None
 
         return results["tracks"]["items"][0]
 
     @staticmethod
     def extract_track_from_item(item: Dict) -> Dict:
-        return item.get('track', {})
+        return item.get("track", {})
 
     @staticmethod
     def extract_album_from_track(track: Dict) -> Dict:
-        return track.get('album', {})
+        return track.get("album", {})
 
     @staticmethod
     def extract_artists_from_json(data: Dict) -> List[Dict]:
-        return data.get('artists', [])
+        return data.get("artists", [])
 
     @staticmethod
     def parse_date(date_str: str) -> datetime:
@@ -37,7 +36,7 @@ class SpotifyHelpers:
             "%Y-%m-%dT%H:%M:%S%z",
             "%Y-%m-%d",
             "%Y-%m",
-            "%Y"
+            "%Y",
         ]
 
         for fmt in formats:
@@ -46,20 +45,22 @@ class SpotifyHelpers:
             except ValueError:
                 continue
         return None
-    
+
     @staticmethod
     def get_album_image_url(album_dict: Dict) -> str:
-        album_images = album_dict.get('images')
-        return album_images[1]["url"] if len(album_images) > 1 else album_images[0]["url"]
+        album_images = album_dict.get("images")
+        return (
+            album_images[1]["url"] if len(album_images) > 1 else album_images[0]["url"]
+        )
 
     @staticmethod
     def search_track(
         track: str,
         artist: str = None,
     ) -> Dict:
-        query = f"track:{track}"
+        query = f"track:{track}"  # noqa: E231
         if artist:
-            query += f" artist:{artist}"
+            query += f" artist:{artist}"  # noqa: E231
 
         try:
             results = sp_client.search(q=query, type="track", limit=1)
@@ -71,7 +72,9 @@ class SpotifyHelpers:
 
     @staticmethod
     def get_artist_id_from_name(artist: str) -> Optional[str]:
-        results = sp_client.search(q=f"artist:{artist}", type="artist", limit=1)
+        results = sp_client.search(
+            q=f"artist:{artist}", type="artist", limit=1  # noqa: E231
+        )
         items = results.get("artists", {}).get("items", [])
         if items:
             return items[0]["id"]
@@ -86,24 +89,24 @@ class SpotifyHelpers:
         while True:
             response = sp_client.playlist_tracks(playlist_id, limit=100, offset=offset)
 
-            tracks = response.get('items', [])
+            tracks = response.get("items", [])
             all_tracks.extend(tracks)
 
             if len(tracks) < 100:
                 break
 
             offset += 100
-        
+
         return all_tracks
 
     @staticmethod
     def extract_tracks(nb_tracks: int) -> Dict:
         if nb_tracks <= 0 or nb_tracks > 50:
             raise ValueError(
-                'The number of tracks to be extracted need to be between 1 and 50 !'
+                "The number of tracks to be extracted need to be between 1 and 50 !"
             )
 
         limit = min(50, nb_tracks)
 
         response = sp_client.current_user_recently_played(limit=limit)
-        return response['items']
+        return response["items"]
