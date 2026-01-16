@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request: {}
+
+jobs:
+  setup:
+    name: 🛠️ Setup Environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+  linting:
+    name: 🔍 Linting Checks
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.9"
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8==6.0.0 black==23.3.0 isort==5.12.0
+
+      - name: Run Flake8
+        run: |
+          echo "::group::🧹 Flake8 Code Analysis"
+          flake8 . --count --show-source --statistics
+          echo "::endgroup::"
+
+      - name: Check Black Formatting
+        run: |
+          echo "::group::🎨 Black Format Check"
+          black --check .
+          echo "::endgroup::"
+
+      - name: Check Import Sorting
+        run: |
+          echo "::group::📦 isort Import Check"
+          isort --check .
+          echo "::endgroup::"
