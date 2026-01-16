@@ -6,3 +6,8 @@ class MissingEnvironmentVariableError(Exception):
 class SpotifyClientInitializationError(Exception):
     """Raised when the Spotify client cannot be initialized."""
     pass
+
+
+class UnknownEnvironment(Exception):
+    """Raised when Environment Variable is unknown."""
+    pass
