@@ -1,10 +1,10 @@
 import logging
-from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, List
 
 from database.tables import ListeningORM
-from models import Album, Artist, Tag, Track, Listening, Playlist, RawTrackData
 from helpers import SpotifyHelpers
+from models import Album, Artist, Listening, Playlist, RawTrackData, Tag, Track
 from preprocessing.data_fetcher import DataFetcher
 
 logger = logging.getLogger(__name__)
@@ -13,30 +13,30 @@ logger = logging.getLogger(__name__)
 class DataBuilder:
     @staticmethod
     def build_listening(item: Dict) -> Listening:
-        track=SpotifyHelpers.extract_track_from_item(item)
-        album=SpotifyHelpers.extract_album_from_track(track)
+        track = SpotifyHelpers.extract_track_from_item(item)
+        album = SpotifyHelpers.extract_album_from_track(track)
 
-        track_artists=SpotifyHelpers.extract_artists_from_json(track)
-        album_artists=SpotifyHelpers.extract_artists_from_json(album)
+        track_artists = SpotifyHelpers.extract_artists_from_json(track)
+        album_artists = SpotifyHelpers.extract_artists_from_json(album)
 
         return Listening(
-            played_at=SpotifyHelpers.parse_date(item.get('played_at')),
-            track_id=track.get('id'),
-            track_name=track.get('name'),
-            track_artists={a.get('id'): a.get('name') for a in track_artists},
-            album_id=album.get('id'),
-            album_name=album.get('name'),
-            album_artists={a.get('id'): a.get('name') for a in album_artists},
-            duration=track.get('duration_ms')/1000,
-            popularity=int(track.get('popularity')),
-            spotify_url=track.get('external_urls', {}).get('spotify'),
-            release_date=SpotifyHelpers.parse_date(album.get('release_date')),
-            image_url = SpotifyHelpers.get_album_image_url(album)
+            played_at=SpotifyHelpers.parse_date(item.get("played_at")),
+            track_id=track.get("id"),
+            track_name=track.get("name"),
+            track_artists={a.get("id"): a.get("name") for a in track_artists},
+            album_id=album.get("id"),
+            album_name=album.get("name"),
+            album_artists={a.get("id"): a.get("name") for a in album_artists},
+            duration=track.get("duration_ms") / 1000,
+            popularity=int(track.get("popularity")),
+            spotify_url=track.get("external_urls", {}).get("spotify"),
+            release_date=SpotifyHelpers.parse_date(album.get("release_date")),
+            image_url=SpotifyHelpers.get_album_image_url(album),
         )
 
     @staticmethod
     def build_listenings(items: List[Dict]) -> List[Listening]:
-        listenings=[]
+        listenings = []
         for item in items:
             listenings.append(DataBuilder.build_listening(item))
         return listenings
@@ -48,7 +48,7 @@ class DataBuilder:
             name=raw_track.album_name,
             artists=DataBuilder.build_artists(raw_track.album_artists),
             release_date=raw_track.release_date,
-            image_url=raw_track.image_url
+            image_url=raw_track.image_url,
         )
 
     @staticmethod
@@ -57,24 +57,19 @@ class DataBuilder:
 
     @staticmethod
     def build_artist(artist_id: str, artist_name: str) -> Artist:
-        return Artist(
-            id=artist_id,
-            name=artist_name
-        )
-    
+        return Artist(id=artist_id, name=artist_name)
+
     @staticmethod
     def build_artists(artists: Dict[str, str]) -> List[Artist]:
-        result=[]
+        result = []
         for artist_id, artist_name in artists.items():
             result.append(DataBuilder.build_artist(artist_id, artist_name))
         return result
 
     @staticmethod
     def build_tag(tag_name: str) -> Tag:
-        return Tag(
-            name=tag_name
-        )
-    
+        return Tag(name=tag_name)
+
     @staticmethod
     def build_tags(tag_names: List[str]) -> List[Tag]:
         return [DataBuilder.build_tag(tag_name) for tag_name in tag_names]
@@ -101,11 +96,11 @@ class DataBuilder:
             future = executor.submit(
                 DataFetcher.fetch_details_from_track,
                 raw_track.track_name,
-                track_artist_name
+                track_artist_name,
             )
             track_details = future.result()
-            listeners = track_details.get('listeners')
-            playcount = track_details.get('playcount')
+            listeners = track_details.get("listeners")
+            playcount = track_details.get("playcount")
 
         formatted_track = Track(
             id=raw_track.track_id,
@@ -121,9 +116,8 @@ class DataBuilder:
 
         with ThreadPoolExecutor(max_workers=5) as executor:
             futures = [
-                executor.submit(
-                    DataBuilder.update_artist_details, artist
-                ) for artist in formatted_track.artists
+                executor.submit(DataBuilder.update_artist_details, artist)
+                for artist in formatted_track.artists
             ]
             for future in as_completed(futures):
                 future.result()
@@ -169,35 +163,32 @@ class DataBuilder:
 
     @staticmethod
     def build_raw_track_from_item(item: Dict) -> RawTrackData:
-        track=SpotifyHelpers.extract_track_from_item(item)
-        album=SpotifyHelpers.extract_album_from_track(track)
+        track = SpotifyHelpers.extract_track_from_item(item)
+        album = SpotifyHelpers.extract_album_from_track(track)
 
-        track_artists=SpotifyHelpers.extract_artists_from_json(track)
-        album_artists=SpotifyHelpers.extract_artists_from_json(album)
+        track_artists = SpotifyHelpers.extract_artists_from_json(track)
+        album_artists = SpotifyHelpers.extract_artists_from_json(album)
 
         return RawTrackData(
-            track_id=track.get('id'),
-            track_name=track.get('name'),
-            track_artists={a.get('id'): a.get('name') for a in track_artists},
-            album_id=album.get('id'),
-            album_name=album.get('name'),
-            album_artists={a.get('id'): a.get('name') for a in album_artists},
-            duration=track.get('duration_ms')/1000,
-            popularity=int(track.get('popularity')),
-            spotify_url=track.get('external_urls', {}).get('spotify'),
-            release_date=SpotifyHelpers.parse_date(album.get('release_date')),
-            image_url = SpotifyHelpers.get_album_image_url(album)
+            track_id=track.get("id"),
+            track_name=track.get("name"),
+            track_artists={a.get("id"): a.get("name") for a in track_artists},
+            album_id=album.get("id"),
+            album_name=album.get("name"),
+            album_artists={a.get("id"): a.get("name") for a in album_artists},
+            duration=track.get("duration_ms") / 1000,
+            popularity=int(track.get("popularity")),
+            spotify_url=track.get("external_urls", {}).get("spotify"),
+            release_date=SpotifyHelpers.parse_date(album.get("release_date")),
+            image_url=SpotifyHelpers.get_album_image_url(album),
         )
 
     @staticmethod
     def build_playlist(playlist_id: str) -> Playlist:
-        extracted_tracks = SpotifyHelpers.extract_tracks_from_playlist(
-            playlist_id
-        )
+        extracted_tracks = SpotifyHelpers.extract_tracks_from_playlist(playlist_id)
 
-        raw_tracks = [DataBuilder.build_raw_track_from_item(t) for t in extracted_tracks]
+        raw_tracks = [
+            DataBuilder.build_raw_track_from_item(t) for t in extracted_tracks
+        ]
 
-        return Playlist(
-            id = playlist_id,
-            tracks = DataBuilder.build_tracks(raw_tracks)
-        )
+        return Playlist(id=playlist_id, tracks=DataBuilder.build_tracks(raw_tracks))

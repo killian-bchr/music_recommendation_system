@@ -15,7 +15,7 @@ def drop_db(env: DBEnv = DBEnv.EXP, allow_prod: bool = False) -> None:
             "❌ Dropping PROD database is forbidden. "
             "Set allow_prod=True explicitly if you REALLY want to."
         )
-    
+
     engine = get_engine(env)
     Base.metadata.drop_all(bind=engine)
 

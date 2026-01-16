@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+
 from sqlalchemy.exc import SQLAlchemyError
 
 from database.db_env import DBEnv

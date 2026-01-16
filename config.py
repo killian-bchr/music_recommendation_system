@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 from exceptions.exceptions import MissingEnvironmentVariableError
@@ -7,7 +8,6 @@ load_dotenv("config.env")
 
 
 class Config:
-
     @staticmethod
     def get_env_variable(name: str) -> str:
         """
@@ -24,7 +24,9 @@ class Config:
         """
         value = os.getenv(name)
         if value is None:
-            raise MissingEnvironmentVariableError(f"Missing environment variable: {name}")
+            raise MissingEnvironmentVariableError(
+                f"Missing environment variable: {name}"
+            )
         return value
 
     API_KEY_LAST_FM = get_env_variable("API_KEY_LASTFM")

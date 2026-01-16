@@ -1,11 +1,12 @@
 import logging
+
 from pandas import DataFrame
 from sqlalchemy.orm import Session
 
 from database.crud import CRUD
 from database.session import get_session
-from preprocessing import DataBuilder, DataPreprocessor, DataTransformer, DataSelector
 from helpers import DBHelpers, SpotifyHelpers
+from preprocessing import DataBuilder, DataPreprocessor, DataSelector, DataTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class Pipeline:
         session: Session,
     ):
         self.session = session
-    
+
     def load_listenings(self, nb_tracks: int = 10) -> None:
         logger.info("Extracting last listenings from Spotify...")
         items = SpotifyHelpers.extract_tracks(nb_tracks)
@@ -70,6 +71,7 @@ class Pipeline:
 
         logger.info(f"Pipeline completed - DataFrame shape: {tracks_vectorized.shape}")
         return tracks_vectorized
+
 
 if __name__ == "__main__":
     with get_session() as session:
