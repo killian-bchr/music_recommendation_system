@@ -2,7 +2,11 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from database.base import Base
-from database.tables.association_tables import artist_tag_association, similar_artist_association
+from database.tables.association_tables import (
+    artist_tag_association,
+    similar_artist_association,
+    artist_album_association,
+)
 
 
 class ArtistORM(Base):
@@ -13,6 +17,13 @@ class ArtistORM(Base):
     name = Column(String)
 
     tags = relationship("TagORM", secondary=artist_tag_association, back_populates="artists")
+
+    albums = relationship(
+        "AlbumORM",
+        secondary=artist_album_association,
+        back_populates="artists"
+    )
+
     similar_artists = relationship(
         "ArtistORM",
         secondary=similar_artist_association,

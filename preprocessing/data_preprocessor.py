@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from pandas import DataFrame, Series
 from datetime import datetime
+from typing import Dict
 from sklearn.preprocessing import MultiLabelBinarizer, StandardScaler
 from sklearn.decomposition import TruncatedSVD
 
@@ -93,7 +94,7 @@ class DataPreprocessor:
         )
 
     @staticmethod
-    def weight_features(df: DataFrame, weights: dict[str, float] = None) -> DataFrame:
+    def weight_features(df: DataFrame, weights: Dict[str, float] = None) -> DataFrame:
         default_weights = {
             TrackColumns.ALBUM_ID: 1.0,
             TrackColumns.RELEASE_DAYS: 1.0,

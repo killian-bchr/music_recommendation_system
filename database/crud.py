@@ -62,13 +62,19 @@ class CRUD:
     @staticmethod
     def album_to_orm(session: Session, album: Album) -> AlbumORM:
         album_db = DBHelpers.get_existing_album(session, album.id)
+
         if album_db:
+            for artist in album.artists:
+                artist_db = CRUD.artist_to_orm(session, artist)
+                if artist_db not in album_db.artists:
+                    album_db.artists.append(artist_db)
             return album_db
 
         album_orm = AlbumORM(
             spotify_id=album.id,
             name=album.name,
-            release_date=album.release_date
+            release_date=album.release_date,
+            artists=[CRUD.artist_to_orm(session, a) for a in album.artists]
         )
         CRUD.save_object_to_session(session, album_orm)
         return album_orm
