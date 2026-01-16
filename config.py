@@ -34,3 +34,4 @@ class Config:
     REDIRECT_URI_SPOTIFY = get_env_variable("REDIRECT_URI_SPOTIFY")
     DATABASE_URL_PROD = get_env_variable("DATABASE_URL_PROD")
     DATABASE_URL_EXP = get_env_variable("DATABASE_URL_EXP")
+    DATABASE_URL_TEST = get_env_variable("DATABASE_URL_TEST")
