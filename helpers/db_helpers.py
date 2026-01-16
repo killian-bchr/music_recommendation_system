@@ -67,6 +67,7 @@ class DBHelpers:
             session.query(AlbumORM)
             .options(
                 joinedload(AlbumORM.artists),
+                joinedload(AlbumORM.tracks),
             )
             .all()
         )
