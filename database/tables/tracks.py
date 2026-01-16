@@ -18,7 +18,7 @@ class TrackORM(Base):
     playcount = Column(Integer, nullable=True)
 
     album_id = Column(Integer, ForeignKey("albums.id"))
-    album = relationship("AlbumORM")
+    album = relationship("AlbumORM", back_populates="tracks")
 
     artists = relationship("ArtistORM", secondary=track_artist_association, backref="tracks")
 

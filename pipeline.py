@@ -41,8 +41,8 @@ class Pipeline:
         new_tracks = DataSelector.select_new_tracks(self.session)
 
         logger.info("Loading new Artists, Albums and Tracks to database...")
-        CRUD.artists_to_orm(self.session, new_artists)
         CRUD.albums_to_orm(self.session, new_albums)
+        CRUD.artists_to_orm(self.session, new_artists)
         CRUD.tracks_to_orm(self.session, new_tracks)
         CRUD.commit_session(self.session)
 

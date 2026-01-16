@@ -53,21 +53,47 @@ class DBHelpers:
     def fetch_all_tracks(session: Session) -> List[TrackORM]:
         return (
             session.query(TrackORM)
-            .options(joinedload(TrackORM.artists))
+            .options(
+                joinedload(TrackORM.artists).joinedload(ArtistORM.tags),
+                joinedload(TrackORM.artists).joinedload(ArtistORM.similar_artists),
+                joinedload(TrackORM.album),
+            )
             .all()
         )
 
     @staticmethod
     def fetch_all_albums(session: Session) -> List[AlbumORM]:
-        return session.query(AlbumORM).all()
+        return (
+            session.query(AlbumORM)
+            .options(
+                joinedload(AlbumORM.artists),
+            )
+            .all()
+        )
 
     @staticmethod
     def fetch_all_artists(session: Session) -> List[ArtistORM]:
-        return session.query(ArtistORM).all()
+        return (
+            session.query(ArtistORM)
+            .options(
+                joinedload(ArtistORM.tags),
+                joinedload(ArtistORM.similar_artists),
+                joinedload(ArtistORM.albums),
+            )
+            .all()
+        )
 
     @staticmethod
     def fetch_all_playlists(session: Session) -> List[PlaylistORM]:
         return session.query(PlaylistORM).all()
+
+    @staticmethod
+    def fetch_all_tags(session: Session) -> List[TagORM]:
+        return (
+            session.query(TagORM)
+            .options(joinedload(TagORM.artists))
+            .all()
+        )
 
     @staticmethod
     def get_existing_listening(session: Session, played_at: datetime) -> Optional[ListeningORM]:

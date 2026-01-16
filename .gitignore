@@ -5,7 +5,6 @@ venv/
 # Configs / secrets
 .env
 config.env
-functions/.cache
 
 # Python cache
 __pycache__/
