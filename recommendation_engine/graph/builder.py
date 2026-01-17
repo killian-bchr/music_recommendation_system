@@ -2,11 +2,9 @@ from typing import Optional, Tuple
 
 import networkx as nx
 
-from recommendation_engine.constants import NodeType
-from recommendation_engine.edge import Edge
-from recommendation_engine.mapping import AUTHORIZED_RELATIONS
-from recommendation_engine.node import Node
-from recommendation_engine.relation import Relation
+from models import Edge, Node, Relation
+from settings.constants import NodeType
+from settings.mapping import AUTHORIZED_RELATIONS
 
 
 class GraphBuilder:
@@ -36,7 +34,9 @@ class GraphBuilder:
 
         raise ValueError(f"Forbidden relation between {u.node_type} and {v.node_type}")
 
-    def build_edge(self, nodes: Tuple[Node, Node], weight: Optional[float]) -> Edge:
+    def build_edge(
+        self, nodes: Tuple[Node, Node], weight: Optional[float] = None
+    ) -> Edge:
         u, v = nodes
         relation = self.build_relation(u, v)
 

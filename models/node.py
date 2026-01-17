@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from recommendation_engine.constants import NodeType
+from settings.constants import NodeType
 
 
 @dataclass(frozen=True)

@@ -38,3 +38,20 @@ class TrendMethods(Methods):
     TREND_TOP_ARTISTS = "chart.getTopArtists"
     TREND_TOP_ALBUMS = "chart.getTopTracks"
     TREND_TOP_TAGS = "chart.getTopTags"
+
+
+class NodeType(str, Enum):
+    ALBUM = "album"
+    ARTIST = "artist"
+    TAG = "tag"
+    TRACK = "track"
+
+
+class RelationType(str, Enum):
+    ALBUM_ALBUM = "album_album"
+    ALBUM_ARTIST = "album_artist"
+    TRACK_ARTIST = "track_artist"
+    TRACK_ALBUM = "track_album"
+    ARTIST_ARTIST = "artist_artist"
+    ARTIST_TAG = "artist_tag"
+    TAG_TAG = "tag_tag"

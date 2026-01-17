@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from recommendation_engine.node import Node
-from recommendation_engine.relation import Relation
+from models import Node, Relation
 
 
 @dataclass

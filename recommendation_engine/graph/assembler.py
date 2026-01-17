@@ -5,8 +5,8 @@ from typing import List
 from database.db_env import DBEnv
 from database.session import get_session
 from helpers.db_helpers import DBHelpers
-from recommendation_engine.constants import NodeType
 from recommendation_engine.graph.builder import GraphBuilder
+from settings.constants import NodeType
 
 
 class GraphAssembler(GraphBuilder):
@@ -67,7 +67,7 @@ class GraphAssembler(GraphBuilder):
         for track in self.tracks:
             for artist in track.artists:
                 edge = self.build_edge(
-                    node=(
+                    nodes=(
                         self.build_node(NodeType.TRACK, track.id),
                         self.build_node(NodeType.ARTIST, artist.id),
                     ),

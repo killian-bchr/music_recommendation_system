@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from constants import RelationType
+from settings.constants import RelationType
 
 
 @dataclass(frozen=True)
