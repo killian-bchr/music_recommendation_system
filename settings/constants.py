@@ -55,3 +55,10 @@ class RelationType(str, Enum):
     ARTIST_ARTIST = "artist_artist"
     ARTIST_TAG = "artist_tag"
     TAG_TAG = "tag_tag"
+
+
+class NodeColor(str, Enum):
+    GREEN = "tab:green"  # noqa: E231
+    ORANGE = "tab:orange"  # noqa: E231
+    BLUE = "tab:blue"  # noqa: E231
+    RED = "tab:red"  # noqa: E231
