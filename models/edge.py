@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from models import Node, Relation
+from models.node import Node
+from models.relation import Relation
 
 
 @dataclass

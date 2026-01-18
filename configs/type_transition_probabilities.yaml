@@ -1,0 +1,43 @@
+markov:
+  default_strategy: balanced
+
+  strategies:
+    balanced:
+      type_transition_probabilities:
+        track:
+          album: 0.3
+          artist: 0.7
+
+        artist:
+          track: 0.3
+          artist: 0.4
+          album: 0.2
+          tag: 0.1
+
+        album:
+          album: 0.5
+          track: 0.5
+
+        tag:
+          artist: 0.9
+          tag: 0.1
+
+    exploration:
+      type_transition_probabilities:
+        track:
+          artist: 0.9
+          album: 0.1
+
+        artist:
+          album: 0.1
+          track: 0.2
+          artist: 0.4
+          tag: 0.1
+
+        album:
+          track: 0.4
+          album: 0.6
+
+        tag:
+          artist: 0.6
+          tag: 0.4

@@ -64,3 +64,21 @@ class GraphVisualizer:
             with_labels,
             figsize,
         )
+
+    @staticmethod
+    def get_components(G: Graph) -> List[Dict]:
+        return list(nx.connected_components(G))
+
+    @staticmethod
+    def get_number_of_components(G: Graph) -> int:
+        components = GraphVisualizer.get_components(G)
+        return len(components)
+
+    @staticmethod
+    def count_nodes(G: Graph) -> Dict[str, int]:
+        count = {}
+
+        for node_type in nx.get_node_attributes(G, "type").values():
+            count[node_type] = count.get(node_type, 0) + 1
+
+        return count

@@ -62,3 +62,8 @@ class NodeColor(str, Enum):
     ORANGE = "tab:orange"  # noqa: E231
     BLUE = "tab:blue"  # noqa: E231
     RED = "tab:red"  # noqa: E231
+
+
+class MarkovStrategy(str, Enum):
+    BALANCED = "balanced"
+    EXPLORATION = "exploration"
