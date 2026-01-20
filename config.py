@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -37,3 +38,4 @@ class Config:
     DATABASE_URL_PROD = get_env_variable("DATABASE_URL_PROD")
     DATABASE_URL_EXP = get_env_variable("DATABASE_URL_EXP")
     DATABASE_URL_TEST = get_env_variable("DATABASE_URL_TEST")
+    CONFIG_ROOT = Path(__file__).resolve().parent / "configs"
