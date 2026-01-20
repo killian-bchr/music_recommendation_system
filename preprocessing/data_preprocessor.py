@@ -115,9 +115,9 @@ class DataPreprocessor:
     def vectorize_tracks(tracks_df: DataFrame, artists_df: DataFrame) -> DataFrame:
         tracks_processed = tracks_df.copy()
 
-        tracks_processed[
-            TrackColumns.RELEASE_DAYS
-        ] = DataPreprocessor.encode_date_column(tracks_df[TrackColumns.RELEASE_DATE])
+        tracks_processed[TrackColumns.RELEASE_DAYS] = (
+            DataPreprocessor.encode_date_column(tracks_df[TrackColumns.RELEASE_DATE])
+        )
         tracks_processed = tracks_processed.drop(columns=[TrackColumns.RELEASE_DATE])
 
         artists_vectorized = DataPreprocessor.vectorize_artists(artists_df)

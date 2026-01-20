@@ -35,6 +35,7 @@ class Config:
     CLIENT_ID_SPOTIFY = get_env_variable("CLIENT_ID_SPOTIFY")
     CLIENT_SECRET_SPOTIFY = get_env_variable("CLIENT_SECRET_SPOTIFY")
     REDIRECT_URI_SPOTIFY = get_env_variable("REDIRECT_URI_SPOTIFY")
+    APP_ENV = get_env_variable("APP_ENV")
     DATABASE_URL_PROD = get_env_variable("DATABASE_URL_PROD")
     DATABASE_URL_EXP = get_env_variable("DATABASE_URL_EXP")
     DATABASE_URL_TEST = get_env_variable("DATABASE_URL_TEST")

@@ -48,17 +48,17 @@ jobs:
       - name: Run Flake8
         run: |
           echo "::group::🧹 Flake8 Code Analysis"
-          flake8 . --count --show-source --statistics
+          flake8 . --count --show-source --statistics --exclude=alembic/*,.git,__pycache__,*.pyc
           echo "::endgroup::"
 
       - name: Check Black Formatting
         run: |
           echo "::group::🎨 Black Format Check"
-          black --check .
+          black --check . --extend-exclude="alembic/"
           echo "::endgroup::"
 
       - name: Check Import Sorting
         run: |
           echo "::group::📦 isort Import Check"
-          isort --check .
+          isort --check . --skip alembic
           echo "::endgroup::"

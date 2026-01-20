@@ -13,3 +13,7 @@ exclude =
     requirements.txt,
     .gitignore,
     .isort.cfg,
+    alembic/env.py
+    alembic/versions/*,
+    alembic/script.py.mako
+    alembic.ini
