@@ -6,7 +6,7 @@ from config import Config
 from settings.constants import MarkovStrategy
 
 
-def validate_type_transition_matrix(T: Dict) -> None:
+def validate_type_transition_matrix(T: Dict[str, Dict[str, float]]) -> None:
     for src, targets in T.items():
         s = sum(targets.values())
         if abs(s - 1.0) > 1e-8:
@@ -34,3 +34,12 @@ def load_markov_type_transition_matrix(
     validate_type_transition_matrix(matrix)
 
     return matrix
+
+
+def load_random_walk_parameters() -> Dict[str, Dict[str, float]]:
+    path = Config.CONFIG_ROOT / "random_walk_parameters.yaml"
+
+    with open(path, "r") as f:
+        data = yaml.safe_load(f)
+
+    return data["random_walk"]
