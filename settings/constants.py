@@ -70,5 +70,5 @@ class MarkovStrategy(str, Enum):
 
 
 class RandomWalkStrategy(str, Enum):
-    POWER_ITERATION = "power iteration"
-    MONTE_CARLO = "monte carlo"
+    POWER_ITERATION = "power_iteration"
+    MONTE_CARLO = "monte_carlo"

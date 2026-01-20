@@ -15,9 +15,9 @@ class PowerIterationRW(RandomWalkBase):
     ):
         self.P = P
         self.pi0 = pi0
-        self.alpha = alpha
-        self.tol = tol
-        self.max_iter = max_iter
+        self.alpha = float(alpha)
+        self.tol = float(tol)
+        self.max_iter = int(max_iter)
 
     def run(self) -> ndarray:
         pi = self.pi0.copy()

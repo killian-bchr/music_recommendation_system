@@ -14,7 +14,7 @@ class MonteCarloRW(RandomWalkBase):
         self.P = P
         self.index = index
         self.seed_nodes = seed_nodes
-        self.steps = steps
+        self.steps = int(steps)
 
     def sample_random_walk(self, start_node: str) -> List[str]:
         current = start_node
