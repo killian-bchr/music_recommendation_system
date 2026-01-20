@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from database.base import Base
@@ -17,6 +17,7 @@ class TrackORM(Base):
     duration = Column(Float)
     popularity = Column(Integer)
     spotify_url = Column(String)
+    image_url = Column(Text, nullable=False)
     listeners = Column(Integer, nullable=True)
     playcount = Column(Integer, nullable=True)
 

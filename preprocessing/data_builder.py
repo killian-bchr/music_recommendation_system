@@ -110,6 +110,7 @@ class DataBuilder:
             duration=raw_track.duration,
             popularity=raw_track.popularity,
             spotify_url=raw_track.spotify_url,
+            image_url=raw_track.image_url,
             listeners=listeners,
             playcount=playcount,
         )

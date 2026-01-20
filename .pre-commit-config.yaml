@@ -6,6 +6,8 @@ repos:
         language_version: python3.11.9
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py
 
@@ -17,6 +19,8 @@ repos:
         args: ["--profile", "black"]
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py
 
@@ -26,17 +30,23 @@ repos:
       - id: trailing-whitespace
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py
       - id: end-of-file-fixer
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py
       - id: mixed-line-ending
         args: ["--fix=lf"]
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py
 
@@ -47,5 +57,7 @@ repos:
         additional_dependencies: [flake8-bugbear]
         exclude: |
             alembic/
+            alembic/.*
+            alembic/versions/.*
             alembic.ini
             alembic/env.py

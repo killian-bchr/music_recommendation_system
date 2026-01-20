@@ -76,6 +76,7 @@ class CRUD:
             spotify_id=album.id,
             name=album.name,
             release_date=album.release_date,
+            image_url=album.image_url,
             artists=[CRUD.artist_to_orm(session, a) for a in album.artists],
         )
         CRUD.save_object_to_session(session, album_orm)
@@ -154,6 +155,7 @@ class CRUD:
             duration=track.duration,
             popularity=track.popularity,
             spotify_url=track.spotify_url,
+            image_url=track.image_url,
             listeners=track.listeners,
             playcount=track.playcount,
             album=CRUD.album_to_orm(session, track.album),

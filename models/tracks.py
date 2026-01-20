@@ -14,5 +14,6 @@ class Track:
     duration: float
     popularity: int
     spotify_url: str
+    image_url: str
     listeners: Optional[int] = None
     playcount: Optional[int] = None

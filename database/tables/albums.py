@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from database.base import Base
@@ -12,6 +12,7 @@ class AlbumORM(Base):
     spotify_id = Column(String, unique=True)
     name = Column(String)
     release_date = Column(String)
+    image_url = Column(Text, nullable=False)
 
     tracks = relationship("TrackORM", back_populates="album")
 
