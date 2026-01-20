@@ -67,3 +67,8 @@ class NodeColor(str, Enum):
 class MarkovStrategy(str, Enum):
     BALANCED = "balanced"
     EXPLORATION = "exploration"
+
+
+class RandomWalkStrategy(str, Enum):
+    POWER_ITERATION = "power iteration"
+    MONTE_CARLO = "monte carlo"

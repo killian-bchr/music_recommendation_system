@@ -4,6 +4,7 @@ import numpy as np
 from networkx import Graph
 from numpy import ndarray
 
+from recommendation_engine.markov.node_index import NodeIndex
 from settings.config_loader import load_markov_type_transition_matrix
 from settings.constants import MarkovStrategy
 
@@ -11,17 +12,12 @@ from settings.constants import MarkovStrategy
 class MarkovKernel:
     def __init__(self, G: Graph, strategy: Optional[MarkovStrategy] = None):
         self.G = G
-
-        self.nodes = list(self.G.nodes)
-        self.n = len(self.nodes)
-
-        self.node_to_idx = {node: i for i, node in enumerate(self.nodes)}
-        self.idx_to_node = {i: node for node, i in self.node_to_idx.items()}
+        self.index = NodeIndex(self.G.nodes)
 
         self.strategy = strategy
         self.type_transition_matrix = load_markov_type_transition_matrix(self.strategy)
 
-        self.P = np.zeros((self.n, self.n))
+        self.P = np.zeros((self.index.n, self.index.n))
 
     def get_node_type(self, node: str) -> str:
         return self.G.nodes[node]["type"]
@@ -43,19 +39,13 @@ class MarkovKernel:
 
         return neighbors_by_type
 
-    def get_transition_matrix_by_type(
-        self,
-        node_type: str,
-    ) -> Dict[str, float]:
-        return self.type_transition_matrix[node_type]
-
     def normalize_type_probs(
         self,
         node_type: str,
         neighbors_by_type: Dict[str, List[str]],
     ) -> Dict[str, float]:
         raw_probs = {
-            t: self.get_transition_matrix_by_type(node_type).get(t, 0.0)
+            t: self.type_transition_matrix[node_type].get(t, 0.0)
             for t in neighbors_by_type
         }
 
@@ -85,7 +75,7 @@ class MarkovKernel:
         return probs
 
     def fill_transition_row(self, node: str) -> None:
-        i = self.node_to_idx[node]
+        i = self.index.node_to_idx[node]
         probs = self.compute_neighbor_transition_probs(node)
 
         if not probs:
@@ -93,7 +83,7 @@ class MarkovKernel:
             return
 
         for neigh, p in probs.items():
-            j = self.node_to_idx[neigh]
+            j = self.index.node_to_idx[neigh]
             self.P[i, j] = p
 
     def validate_kernel(self, tol: float = 1e-8) -> None:
@@ -106,7 +96,7 @@ class MarkovKernel:
                 raise ValueError(f"Row {i} sums to {s}, not 1")
 
     def build_kernel(self) -> ndarray:
-        for node in self.nodes:
+        for node in self.index.nodes:
             self.fill_transition_row(node)
 
         self.validate_kernel()
