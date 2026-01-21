@@ -33,7 +33,15 @@ class DBHelpers:
     def get_tracks_by_spotify_ids(
         session: Session, track_ids: List[str]
     ) -> List[TrackORM]:
-        return session.query(TrackORM).filter(TrackORM.spotify_id.in_(track_ids)).all()
+        return (
+            session.query(TrackORM)
+            .options(
+                joinedload(TrackORM.artists),
+                joinedload(TrackORM.album),
+            )
+            .filter(TrackORM.spotify_id.in_(track_ids))
+            .all()
+        )
 
     @staticmethod
     def fetch_last_tracks_listened(
@@ -117,3 +125,17 @@ class DBHelpers:
     @staticmethod
     def get_track_by_id(session: Session, track_id: int) -> Optional[TrackORM]:
         return session.query(TrackORM).filter_by(id=track_id).first()
+
+    def get_tracks_by_ids(
+        session: Session,
+        track_ids: List[int],
+    ) -> List[TrackORM]:
+        return (
+            session.query(TrackORM)
+            .options(
+                joinedload(TrackORM.artists),
+                joinedload(TrackORM.album),
+            )
+            .filter(TrackORM.id.in_(track_ids))
+            .all()
+        )
